@@ -17,7 +17,7 @@
                 @if (file.IsDirectory)
                 {
                     <details>
-                        <summary class="flex justify-between items-center">
+                        <summary class="flex justify-between items-center mb-3">
                             <span class="text-blue-400">📁 @file.Name</span>
                             <i class="fa-solid fa-caret-down"></i>
                         </summary>
@@ -26,8 +26,10 @@
                 }
                 else
                 {
-                    <span class="text-green-400">📄 @file.Name</span>
-                    <span class="text-gray-400"> - @file.Length.ToString("N0") bytes</span>
+                    <div class="flex items-center justify-between">
+                        <span class="text-green-400">📄 @Truncate(file.Name, 10)</span>
+                        <span class="text-gray-400"> @GetReadableFileSize(file.Length)</span>
+                    </div>
                 }
             </div>
         }
