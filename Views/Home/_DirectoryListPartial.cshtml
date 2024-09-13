@@ -1,0 +1,35 @@
+@using Renci.SshNet.Sftp
+@model List<ISftpFile>
+
+<div class="folder-list bg-gray-900 p-4 rounded-lg h-96 w-full max-w-md overflow-auto shadow-lg">
+    <div>
+        @foreach (var file in Model)
+        {
+            <div class="p-2 border-b border-gray-800 cursor-pointer hover:bg-gray-800 transition duration-200 ease-in-out text-white truncate"
+                hx-post="@Url.Action("LoadFolderContents")" hx-vals='{
+                 "path": "@file.FullName",
+                 "server": "@ViewBag.Server",
+                 "port": @ViewBag.Port,
+                 "user": "@ViewBag.User",
+                 "password": "@ViewBag.Password"
+             }' hx-target="#subfolder-list-@file.FullName.GetHashCode()" hx-swap="innerHTML">
+
+                @if (file.IsDirectory)
+                {
+                    <details>
+                        <summary class="flex justify-between items-center">
+                            <span class="text-blue-400">📁 @file.Name</span>
+                            <i class="fa-solid fa-caret-down"></i>
+                        </summary>
+                        <div id="subfolder-list-@file.FullName.GetHashCode()" class="pl-4"></div>
+                    </details>
+                }
+                else
+                {
+                    <span class="text-green-400">📄 @file.Name</span>
+                    <span class="text-gray-400"> - @file.Length.ToString("N0") bytes</span>
+                }
+            </div>
+        }
+    </div>
+</div>

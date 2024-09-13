@@ -1,8 +1,37 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿<div class="flex justify-center">
+    <form asp-action="Connect" asp-controller="Home" class="max-w-lg mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+        <div class="mb-4">
+            <label for="server" class="block text-gray-700 text-sm font-bold mb-2">Server</label>
+            <input type="text" id="server" name="server"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter server IP">
+        </div>
+        <div class="mb-4">
+            <label for="port" class="block text-gray-700 text-sm font-bold mb-2">Port</label>
+            <input type="text" id="port" name="port"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter port">
+        </div>
+        <div class="mb-4">
+            <label for="user" class="block text-gray-700 text-sm font-bold mb-2">User</label>
+            <input type="text" id="user" name="user"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter username">
+        </div>
+        <div class="mb-4">
+            <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+            <input type="password" id="password" name="password"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter password">
+        </div>
+        <div class="flex justify-center">
+            <button type="submit"
+                class="px-6 py-2 bg-purple-500 text-white rounded shadow hover:opacity-70">Submit</button>
+        </div>
+    </form>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+@* @section Scripts {
+<script src="~/js/terminal.js" async></script>
+} *@

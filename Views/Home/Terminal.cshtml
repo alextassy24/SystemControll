@@ -1,0 +1,107 @@
+@model TerminalViewModel
+@{
+    ViewData["Title"] = Model.Server;
+    ViewData["User"] = Model.User;
+    ViewData["Port"] = Model.Port;
+    string serverName = Model.Server;
+    string user = Model.User;
+}
+
+<div id="connect">
+    <div class="grid grid-cols-12">
+        <div id="folder-list" class="h-100 col-span-12 md:col-span-3 bg-gray-800 text-white p-4 "
+            hx-post="@Url.Action("LoadRootDirectories")" hx-vals='{
+                 "server": "@Model.Server",
+                 "port": @Model.Port,
+                 "user": "@Model.User",
+                 "password": "@Model.Password"
+             }' hx-trigger="load">
+        </div>
+        <div class="col-span-12 md:col-span-9">
+            <div id="terminal" class="bg-gray-900 p-5"></div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/1.6.1/htmx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.11/signalr.min.js"></script>
+
+    <script>
+        // Initialize terminal
+        var term = new Terminal({
+            cursorBlink: true,
+            theme: {
+                background: '#1a202c', // Tailwind's bg-gray-900
+                foreground: '#f7fafc', // Tailwind's text-gray-100
+                cursor: '#f56565',     // Tailwind's red-400
+                selection: '#4a5568',  // Tailwind's gray-700
+            },
+            fontFamily: '"Fira Code", monospace',
+            fontSize: 14,
+        });
+
+        term.open(document.getElementById('terminal'));
+
+        // Variables for user and serverName from Razor
+        var user = '@user';
+        var serverName = '@serverName';
+
+        function prompt() {
+            term.write(`\r\n\u001b[1;32m${user}@@${serverName}\u001b[0m:\u001b[1;34m~\u001b[0m$ `);
+        }
+
+        let command = '';
+
+        term.onData(function (data) {
+            const code = data.charCodeAt(0);
+            if (code === 13) { // Enter key
+                // Send the command to the server through SignalR
+                term.write('\r\n'); // Move to new line
+                connection.invoke('ExecuteCommand', command)
+                    .catch(function (err) {
+                        return console.error(err.toString());
+                    });
+                command = '';
+            } else if (code === 127) { // Backspace key
+                if (command.length > 0) {
+                    command = command.slice(0, -1);
+                    term.write('\b \b');
+                }
+            } else {
+                // Append character to command and display it
+                command += data;
+                term.write(data);
+            }
+        });
+
+        // Start the SignalR connection
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl('/ws/terminal')
+            .build();
+
+        connection.start()
+            .then(function () {
+                console.log('Connected to SignalR');
+
+                // Connect to the SSH server
+                connection.invoke('ConnectToServer', '@Model.Server', @Model.Port, '@Model.User', '@Model.Password')
+                    .catch(function (err) {
+                        return console.error(err.toString());
+                    });
+            })
+            .catch(function (err) {
+                console.error(err.toString());
+            });
+
+        connection.on('ReceiveCommandOutput', function (output) {
+            term.write(output + '\r\n');
+            prompt(); // Show the prompt again after the command output
+        });
+
+        // Initial prompt
+        prompt();
+
+    </script>
+}

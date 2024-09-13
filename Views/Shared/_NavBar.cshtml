@@ -1,0 +1,20 @@
+@{
+    string link = "hover:cursor-pointer hover:text-red-500";
+    string title = ViewData["Title"]?.ToString() ?? "System Control App";
+    string port = ViewData["Port"]?.ToString() ?? "";
+    string user = ViewData["User"]?.ToString() ?? "";
+}
+
+<nav class="bg-gray-100">
+    <div class="container mx-auto flex justify-between py-4">
+        <div>
+            @title<span class="text-red-500">@(string.IsNullOrEmpty(port) ? "" : $":{port}")</span>
+        </div>
+        @if (!string.IsNullOrEmpty(user))
+        {
+            <div>
+                Connected as <span class="text-blue-500">@user</span>
+            </div>
+        }
+    </div>
+</nav>
